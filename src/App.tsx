@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from '@/pages/home';
+import { Experiences } from '@/pages/home';
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Experiences />} />
       </Routes>
     </BrowserRouter>
   );
