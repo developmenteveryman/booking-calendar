@@ -1,0 +1,99 @@
+.table .thead-dark th {
+  color: #fff;
+  background-color: #212529;
+  border-color: #32383e;
+}
+
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table td:last-child {
+  white-space: nowrap;
+}
+
+.table td:last-child .btn {
+  display: inline-block;
+  min-width: 60px; 
+}
+
+/* Buttons */
+.booking-calendar_btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+  border-radius: 0;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.booking-calendar_btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #ffffff;
+}
+
+.booking-calendar_btn-success {
+  background-color: #3baa35;
+  border-color: #3baa35;
+  color: #fff;
+  border-radius: 0;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.booking-calendar_btn-success:hover {
+  background-color: #318d2c;
+  border-color: #2e8329;
+  color: #ffffff;
+}
+
+/* ========== MOBILE VIEW ========== */
+
+.mobile-event-title {
+  background-color: #212529;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 12px;
+  border-radius: 6px 6px 0 0;
+  margin: 0;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.mobile-event-card {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-event-details {
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.mobile-event-details div {
+  margin-bottom: 0.5rem;
+}
+
+.mobile-event-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.mobile-event-buttons button {
+  flex: 1; /* Buttons take full width inside card */
+}

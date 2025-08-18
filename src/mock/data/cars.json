@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "name": "Ferrari 488",
+    "fromPrice": 49,
+    "image": "Ferrari-California-Main-Image1.jpg",
+    "slots": [
+      { "time": "09:00 - 09:30", "status": "available" },
+      { "time": "09:30 - 10:00", "status": "unavailable" },
+      { "time": "10:00 - 10:30", "status": "full" }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Lamborghini Huracán",
+    "fromPrice": 39,
+    "image": "Lamborghini-LP-1.jpg",
+    "slots": [
+      { "time": "09:00 - 09:30", "status": "available" },
+      { "time": "09:30 - 10:00", "status": "available" },
+      { "time": "10:00 - 10:30", "status": "alreadyBooked" },
+      { "time": "10:00 - 10:30", "status": "alreadyBooked" }
+    ]
+  }
+]

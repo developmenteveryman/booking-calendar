@@ -1,0 +1,29 @@
+{
+  "snetterton1": {
+    "id": 1,
+    "venueId": 1,
+    "date": 1753315200,
+    "timeAllocated": 28800,
+    "timeRemaining": 7200,
+    "timeUsed": 21600,
+    "active": 1
+  },
+  "brandsHatch1": {
+    "id": 2,
+    "venueId": 2,
+    "date": 1753401600,
+    "timeAllocated": 32400,
+    "timeRemaining": 10800,
+    "timeUsed": 21600,
+    "active": 1
+  },
+  "oultonPark1": {
+    "id": 3,
+    "venueId": 3,
+    "date": 1753488000,
+    "timeAllocated": 25200,
+    "timeRemaining": 25200,
+    "timeUsed": 0,
+    "active": 1
+  }
+}

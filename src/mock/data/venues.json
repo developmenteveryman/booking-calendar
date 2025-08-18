@@ -1,0 +1,32 @@
+[
+  {
+    "venuedateid": "snetterton1",
+    "venueid": 1,
+    "venuedescription": "Snetterton",
+    "date": 1753315200,
+    "timeAllocated": 28800,
+    "timeRemaining": 7200,
+    "timeUsed": 21600,
+    "active": 1
+  },
+  {
+    "venuedateid": "brandsHatch1",
+    "venueid": 7,
+    "venuedescription": "Brands Hatch",
+    "date": 1753401600,
+    "timeAllocated": 32400,
+    "timeRemaining": 10800,
+    "timeUsed": 21600,
+    "active": 1
+  },
+  {
+    "venuedateid": "oultonPark1",
+    "venueid": 4,
+    "venuedescription": "Oulton Park",
+    "date": 1753488000,
+    "timeAllocated": 25200,
+    "timeRemaining": 25200,
+    "timeUsed": 0,
+    "active": 1
+  }
+]
