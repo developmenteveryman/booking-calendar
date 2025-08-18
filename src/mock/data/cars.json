@@ -3,11 +3,12 @@
     "id": 1,
     "name": "Ferrari 488",
     "fromPrice": 49,
+    "upgrade": "£49.99",
     "image": "Ferrari-California-Main-Image1.jpg",
     "slots": [
       { "time": "09:00 - 09:30", "status": "available" },
-      { "time": "09:30 - 10:00", "status": "unavailable" },
-      { "time": "10:00 - 10:30", "status": "full" }
+      { "time": "09:30 - 10:00", "status": "fullyBooked" },
+      { "time": "10:00 - 10:30", "status": "nearlyFull", "upgrade": "£49.99" }
     ]
   },
   {
@@ -17,9 +18,17 @@
     "image": "Lamborghini-LP-1.jpg",
     "slots": [
       { "time": "09:00 - 09:30", "status": "available" },
-      { "time": "09:30 - 10:00", "status": "available" },
-      { "time": "10:00 - 10:30", "status": "alreadyBooked" },
-      { "time": "10:00 - 10:30", "status": "alreadyBooked" }
+      { "time": "09:30 - 10:00", "status": "available", "upgrade": "£59.99" },
+      { "time": "10:00 - 10:30", "status": "nearlyFull" },
+      { "time": "10:30 - 11:00", "status": "fullyBooked" },
+      { "time": "11:00 - 11:30", "status": "fullyBooked" },
+      { "time": "11:30 - 12:00", "status": "fullyBooked" },
+      { "time": "12:00 - 12:30", "status": "fullyBooked" },
+      { "time": "12:30 - 13:00", "status": "fullyBooked" },
+      { "time": "13:00 - 13:30", "status": "fullyBooked" },
+      { "time": "13:30 - 14:00", "status": "fullyBooked" },
+      { "time": "14:00 - 14:30", "status": "fullyBooked" },
+      { "time": "14:30 - 15:00", "status": "fullyBooked" }
     ]
   }
 ]

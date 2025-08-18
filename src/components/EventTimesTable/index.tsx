@@ -1,15 +1,19 @@
 import { type FunctionalComponent } from 'preact';
-import moment from 'moment';
+import { useState } from 'preact/hooks';
+import './eventTimesTable.css';
 
+type SlotStatus = 'available' | 'nearlyFull' | 'fullyBooked';
 type Slot = {
   time: string;
-  status: string;
+  status: SlotStatus;
+  upgrade?: string;
 };
 
 type CarSlotGroup = {
   id: number;
   name: string;
   fromPrice?: number;
+  upgrade?: string;
   image?: string;
   slots: Slot[];
 };
@@ -21,120 +25,257 @@ interface Props {
 }
 
 const EventTimesTable: FunctionalComponent<Props> = ({ cars, date, selectedEvent }) => {
-  const formattedDate = date
-    ? moment.unix(date).format('dddd Do MMMM YYYY').toLocaleUpperCase()
-    : '';
-  const singleCarMode = cars.length === 1;
+  const [selectedCarIds, setSelectedCarIds] = useState<number[]>([]);
+  const [selectedSlotTimes, setSelectedSlotTimes] = useState<{ [carId: number]: string[] }>({});
+
+  const handleSlotClick = (carId: number, slotTime: string, status: SlotStatus) => {
+    if (status === 'fullyBooked') return;
+
+    setSelectedCarIds((prev) => (prev.includes(carId) ? prev : [...prev, carId]));
+
+    setSelectedSlotTimes((prev) => {
+      const times = prev[carId] || [];
+      return {
+        ...prev,
+        [carId]: times.includes(slotTime)
+          ? times.filter((t) => t !== slotTime)
+          : [...times, slotTime],
+      };
+    });
+  };
+
+  const getSlotClass = (slot: Slot, carId: number): SlotStatus | 'selected' => {
+    if (selectedSlotTimes[carId]?.includes(slot.time)) return 'selected';
+    return slot.status;
+  };
+
+  const getBtnClass = (slot: Slot, carId: number) => {
+    const statusClass = getSlotClass(slot, carId);
+
+    let statusBtnClass = '';
+    switch (statusClass) {
+      case 'available':
+        statusBtnClass = 'btn btn-success';
+        break;
+      case 'selected':
+        statusBtnClass = 'btn btn-secondary';
+        break;
+      case 'fullyBooked':
+        statusBtnClass = 'btn btn-danger';
+        break;
+      case 'nearlyFull':
+        statusBtnClass = 'btn btn-nearlyfull';
+        break;
+      default:
+        statusBtnClass = 'btn btn-outline-secondary disabled';
+    }
+
+    return `booking-calendar_slot-btn ${statusBtnClass} btn-sm m-1 position-relative`;
+  };
+
+  const handleRemoveVenue = () => {
+    setSelectedCarIds([]);
+    setSelectedSlotTimes({});
+  };
+
+  const handleRemoveCar = (carId: number) => {
+    setSelectedCarIds((prev) => prev.filter((id) => id !== carId));
+    setSelectedSlotTimes((prev) => {
+      const copy = { ...prev };
+      delete copy[carId];
+      return copy;
+    });
+  };
+
+  const duplicateSlotTimes: string[] = [];
+  const allSelectedTimes: string[] = [];
+
+  Object.values(selectedSlotTimes).forEach((times) => {
+    times.forEach((time) => {
+      if (allSelectedTimes.includes(time) && !duplicateSlotTimes.includes(time)) {
+        duplicateSlotTimes.push(time);
+      } else {
+        allSelectedTimes.push(time);
+      }
+    });
+  });
 
   return (
-    <div className="container my-4">
-      {selectedEvent && (
-        <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-          <div
-            className="p-2 mb-2"
-            style={{
-              backgroundColor: '#f0f0f0',
-              borderRadius: '4px',
-              textAlign: 'left',
-            }}
-          >
-            Available time slots for <strong>{formattedDate}</strong> at{' '}
-            <strong>{selectedEvent}</strong>
-          </div>
+    <div className="container my-4 booking-calendar_table-wrapper">
+      {/* Selection Summary */}
+      {(selectedEvent || selectedCarIds.length > 0) && (
+        <div className="mb-3 p-3 booking-calendar_selection-summary">
+          {selectedEvent && (
+            <div className="mb-2 d-flex justify-content-between align-items-center">
+              <div>
+                <strong>You have selected the following venue:</strong> {selectedEvent}
+              </div>
+              <button className="btn btn-sm btn-outline-danger" onClick={handleRemoveVenue}>
+                Remove
+              </button>
+            </div>
+          )}
+
+          {selectedCarIds.length > 0 && (
+            <div className="d-flex flex-column text-left">
+              <strong className="mb-1">You have selected the following car(s):</strong>
+              <ul className="list-unstyled mb-0">
+                {selectedCarIds.map((carId) => {
+                  const car = cars.find((c) => c.id === carId);
+                  if (!car) return null;
+                  return (
+                    <li
+                      key={carId}
+                      className="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <span>{car.name}</span>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleRemoveCar(carId)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 
+      {/* Duplicate Time Warning */}
+      {duplicateSlotTimes.length > 0 && (
+        <div className="alert alert-warning mb-2">
+          You have selected the same time for multiple cars: {duplicateSlotTimes.join(', ')}
+        </div>
+      )}
+
+      {/* Legend */}
+      <div className="mt-3 d-flex flex-wrap align-items-center mb-3">
+        <div className="booking-calendar_legend booking-calendar_legend-fullybooked">
+          Fully booked
+        </div>
+        <div className="booking-calendar_legend booking-calendar_legend-nearlyfull">
+          Nearly full
+        </div>
+        <div className="booking-calendar_legend booking-calendar_legend-available">Available</div>
+        <div className="booking-calendar_legend booking-calendar_legend-selected">Selected</div>
+      </div>
+
+      {/* Cars Table */}
       {cars.length === 0 ? (
         <div className="alert alert-warning">No cars or times available.</div>
       ) : (
-        <div className="table-responsive">
-          <table className="table table-bordered align-middle text-center mb-0">
-            <thead className="thead-dark">
-              <tr>
-                <th style={{ width: '220px' }}>Car</th>
-                <th colSpan={6}>Time Slots</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cars.map((car) => {
-                const isDisabled = singleCarMode && cars[0].id !== car.id;
-
-                return (
-                  <tr key={car.id} className={isDisabled ? 'table-secondary' : ''}>
-                    <td className="p-0 align-top" style={{ width: '220px' }}>
-                      <div className="position-relative text-white" style={{ height: '120px' }}>
-                        <img
-                          src={`/images/${car.image}`}
-                          alt={car.name}
-                          className="img-fluid w-100 h-100"
-                          style={{ objectFit: 'cover', borderRadius: 0 }}
-                        />
-
-                        <div
-                          className="position-absolute w-100 h-100"
-                          style={{
-                            background: 'rgba(0, 0, 0, 0.4)',
-                            top: 0,
-                            left: 0,
-                          }}
-                        />
-
-                        {car.fromPrice && (
-                          <div
-                            className="position-absolute bg-success text-white px-2 py-1 font-weight-bold"
-                            style={{ fontSize: '0.8rem', top: 0, left: 0 }}
-                          >
-                            From £{car.fromPrice}
-                          </div>
+        <>
+          {/* Desktop Table */}
+          <div className="table-responsive d-none d-md-block">
+            <table className="table table-bordered align-middle text-center mb-0">
+              <thead className="thead-dark sticky-top">
+                <tr>
+                  <th style={{ width: '220px' }}>Car</th>
+                  <th colSpan={6}>Time Slots</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cars.map((car) => (
+                  <tr key={car.id}>
+                    <td className="p-0 align-top booking-calendar_car-cell">
+                      <div className="position-relative text-white booking-calendar_car-wrapper">
+                        {car.image && (
+                          <img
+                            src={`/images/${car.image}`}
+                            alt={car.name}
+                            className="img-fluid w-100 h-100"
+                            style={{ objectFit: 'cover', borderRadius: 0 }}
+                          />
                         )}
-
-                        <div
-                          className="position-absolute text-center font-weight-bold"
-                          style={{
-                            padding: '4px',
-                            fontSize: '0.9rem',
-                            bottom: 0,
-                            left: 0,
-                            width: '100%',
-                          }}
-                        >
-                          {car.name}
-                        </div>
+                        <div className="booking-calendar_car-overlay" />
+                        {car.upgrade && (
+                          <div className="booking-calendar_car-price">From {car.upgrade}</div>
+                        )}
+                        <div className="booking-calendar_car-name">{car.name}</div>
                       </div>
                     </td>
-
-                    <td colSpan={6} style={{ padding: 0 }}>
-                      <div
-                        className="d-flex flex-row"
-                        style={{ overflowX: 'auto', whiteSpace: 'nowrap' }}
-                      >
-                        {car.slots.map((slot, idx) => {
-                          const [start, end] = slot.time.split(' - ');
-                          const label = `${start} - ${end}`;
-
-                          const btnClass =
-                            slot.status === 'available' && !isDisabled
-                              ? 'btn btn-success btn-sm m-1'
-                              : 'btn btn-outline-secondary btn-sm m-1 disabled';
-
-                          return (
-                            <button
-                              key={idx}
-                              className={btnClass}
-                              disabled={slot.status !== 'available'}
-                            >
-                              {label}
-                            </button>
-                          );
-                        })}
+                    <td className="p-0 align-middle">
+                      <div className="d-flex flex-wrap align-items-center booking-calendar_slots-container">
+                        {car.slots.map((slot, idx) => (
+                          <button
+                            key={idx}
+                            className={`flex-fill ${getBtnClass(slot, car.id)}`}
+                            onClick={() => handleSlotClick(car.id, slot.time, slot.status)}
+                            disabled={slot.status === 'fullyBooked'}
+                          >
+                            {slot.time}
+                            {slot.upgrade && (
+                              <div className="booking-calendar_slot-upgrade">{slot.upgrade}</div>
+                            )}
+                          </button>
+                        ))}
                       </div>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card Layout */}
+          <div className="d-block d-md-none mobile-cards-wrapper">
+            {cars.map((car) => (
+              <div key={car.id} className="col-12 mb-3">
+                <div className="card car-card">
+                  <div className="position-relative">
+                    {car.image && (
+                      <img
+                        src={`/images/${car.image}`}
+                        className="card-img-top car-card-img"
+                        alt={car.name}
+                      />
+                    )}
+                    <div className="car-card-overlay" />
+                    {car.upgrade && (
+                      <span className="badge badge-danger upgrade-badge">{car.upgrade}</span>
+                    )}
+                    <div className="car-card-title">{car.name}</div>
+                  </div>
+                  <div className="card-body p-2">
+                    <div className="slots-grid-mobile">
+                      {car.slots.map((slot, idx) => {
+                        const statusClass = getSlotClass(slot, car.id);
+
+                        const btnClass =
+                          statusClass === 'available'
+                            ? 'btn btn-success btn-sm m-1 flex-fill'
+                            : statusClass === 'selected'
+                              ? 'btn btn-secondary btn-sm m-1 flex-fill'
+                              : statusClass === 'fullyBooked'
+                                ? 'btn btn-danger btn-sm m-1 flex-fill'
+                                : statusClass === 'nearlyFull'
+                                  ? 'btn btn-nearlyfull btn-sm m-1 flex-fill'
+                                  : 'btn btn-outline-secondary btn-sm m-1 disabled flex-fill';
+
+                        return (
+                          <button
+                            key={idx}
+                            className={`${btnClass} booking-calendar_slot-btn`}
+                            onClick={() => handleSlotClick(car.id, slot.time, slot.status)}
+                            disabled={slot.status === 'fullyBooked'}
+                          >
+                            {slot.time}
+                            {slot.upgrade && (
+                              <div className="booking-calendar_slot-upgrade">{slot.upgrade}</div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

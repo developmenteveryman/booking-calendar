@@ -12,53 +12,32 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
   margin: 0 auto;
   width: 90%;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
 }
 
-.modal-dialog {
+.booking-calendar_modal-dialog {
   display: flex;
   align-items: center;
   max-width: 1200px;
   width: 100%;
 }
 
-/* @media (min-width: 1200px) {
-  .modal-dialog .booking-calendar_modal-content {
-    max-width: 1140px;
-  }
-}
-
-@media (min-width: 1100px) {
-  .modal-dialog .booking-calendar_modal-content {
-    max-width: 1040px;
-  }
-}
-
-@media (min-width: 768px) {
-  .modal-dialog .booking-calendar_modal-content {
-    max-width: 720px;
-  }
-}
-
-@media (min-width: 576px) {
-  .modal-dialog .booking-calendar_modal-content {
-    max-width: 540px;
-  }
-} */
-
 /* Modal header */
-.booking-calendar_modal-content .modal-header {
+.booking-calendar_modal-content .booking-calendar_modal-header {
   border-bottom: 1px solid #e0e0e0;
   padding: 0;
 }
 
-.booking-calendar_modal-content .modal-title {
+.booking-calendar_modal-content .booking-calendar_modal-title {
   font-size: 1.25rem;
   font-weight: 400;
   color: #151819;
 }
 
 /* Close button */
-.booking-calendar_modal-content .btn-close {
+.booking-calendar_modal-content .booking-calendar_close {
   background: none;
   border: none;
   padding: 0;
@@ -74,21 +53,17 @@
 }
 
 /* Modal body */
-.booking-calendar_modal-content .modal-body {
+.booking-calendar_modal-content .booking-calendar_modal-body {
   padding: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1rem 0;
   font-size: 14px;
   color: #000000;
 }
 
-.booking-calendar_modal-content .modal-body img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-
 /* Modal footer */
-.booking-calendar_modal-content .modal-footer {
+.booking-calendar_modal-content .booking-calendar_modal-footer {
   border-top: 1px solid #e0e0e0;
   padding: 0;
   justify-content: flex-start;

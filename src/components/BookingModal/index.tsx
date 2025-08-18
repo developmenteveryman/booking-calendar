@@ -18,20 +18,25 @@ const BookingModal = ({ selectedExperience, onClose }: Props) => {
       aria-labelledby="bookingModalLabel"
       aria-hidden="true"
     >
-      <div className="modal-dialog modal-dialog-centered">
+      <div className="modal-dialog booking-calendar_modal-dialog modal-dialog-centered">
         <div className="modal-content booking-calendar_modal-content">
           {/* Modal Header */}
-          <div className="modal-header">
-            <h5 className="modal-title mb-3" id="bookingModalLabel">
+          <div className="modal-header booking-calendar_modal-header">
+            <h5 className="modal-title booking-calendar_modal-title mb-3" id="bookingModalLabel">
               Choose your preferred date and venue to see available cars
             </h5>
-            <button type="button" className="close" onClick={onClose} aria-label="Close">
+            <button
+              type="button"
+              className="close booking-calendar_close"
+              onClick={onClose}
+              aria-label="Close"
+            >
               &times;
             </button>
           </div>
 
           {/* Modal Body */}
-          <div className="modal-body">
+          <div className="modal-body booking-calendar_modal-body">
             <EventTable />
           </div>
 

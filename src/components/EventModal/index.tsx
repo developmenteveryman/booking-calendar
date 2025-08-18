@@ -29,7 +29,7 @@ const EventModal: FunctionalComponent<EventModalProps> = ({ show, onHide, event 
           </div>
 
           {/* Body */}
-          <div className="modal-body">
+          <div className="modal-body p-0">
             <div className="row m-0 align-items-stretch">
               {/* Left column */}
               <div className="col-12 col-md-3 bg-dark text-white p-3">
@@ -65,13 +65,6 @@ const EventModal: FunctionalComponent<EventModalProps> = ({ show, onHide, event 
                 <p>{event.details}</p>
               </div>
             </div>
-          </div>
-
-          {/* Footer */}
-          <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={onHide}>
-              Close
-            </button>
           </div>
         </div>
       </div>
