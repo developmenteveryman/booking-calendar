@@ -1,5 +1,5 @@
 import { type FunctionalComponent } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useMemo } from 'preact/hooks';
 import './eventTimesTable.css';
 
 type SlotStatus = 'available' | 'nearlyFull' | 'fullyBooked';
@@ -16,41 +16,89 @@ type CarSlotGroup = {
   upgrade?: string;
   image?: string;
   slots: Slot[];
+  maxSlots?: number;
 };
 
 interface Props {
   cars: CarSlotGroup[];
-  date?: number;
   selectedEvent?: string;
+  onBack: () => void;
 }
 
-const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) => {
-  const [selectedCarIds, setSelectedCarIds] = useState<number[]>([]);
-  const [selectedSlotTimes, setSelectedSlotTimes] = useState<{ [carId: number]: string[] }>({});
+interface SelectionState {
+  slotTimes: { [carId: number]: string[] };
+}
 
-  const handleSlotClick = (carId: number, slotTime: string, status: SlotStatus) => {
+const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent, onBack }) => {
+  const [selection, setSelection] = useState<SelectionState>({ slotTimes: {} });
+  const [showBackWarning, setShowBackWarning] = useState(false);
+  // Quick lookup for cars
+  const carMap = useMemo(() => {
+    const map = new Map<number, CarSlotGroup>();
+    cars.forEach((car) => map.set(car.id, car));
+    return map;
+  }, [cars]);
+
+  const parseUpgrade = (upgrade?: string | number): number => {
+    if (!upgrade) return 0;
+    if (typeof upgrade === 'number') return upgrade;
+    const parsed = parseFloat(upgrade.replace(/[^\d.]/g, ''));
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  const getCarAdditionalCost = (car: CarSlotGroup): number => {
+    const carUpgrade = parseUpgrade(car.upgrade);
+    const slotUpgrades = (selection.slotTimes[car.id] || []).reduce((sum, time) => {
+      const slot = car.slots.find((s) => s.time === time);
+      return sum + parseUpgrade(slot?.upgrade);
+    }, 0);
+    return carUpgrade + slotUpgrades;
+  };
+
+  const getMaxSlots = (carId: number) => {
+    const car = carMap.get(carId);
+    if (!car) return 1;
+    return car.maxSlots ?? car.slots.length;
+  };
+
+  const handleSlotClick = (carId: number, time: string, status: SlotStatus) => {
     if (status === 'fullyBooked') return;
 
-    setSelectedCarIds((prev) => (prev.includes(carId) ? prev : [...prev, carId]));
+    setSelection((prev) => {
+      const slotTimes = { ...prev.slotTimes };
+      const carSlots = slotTimes[carId] ? [...slotTimes[carId]] : [];
 
-    setSelectedSlotTimes((prev) => {
-      const times = prev[carId] || [];
-      return {
-        ...prev,
-        [carId]: times.includes(slotTime)
-          ? times.filter((t) => t !== slotTime)
-          : [...times, slotTime],
-      };
+      if (carSlots.includes(time)) {
+        // remove time
+        const updatedSlots = carSlots.filter((t) => t !== time);
+        if (updatedSlots.length > 0) {
+          slotTimes[carId] = updatedSlots;
+        } else {
+          delete slotTimes[carId];
+        }
+      } else {
+        if (carSlots.length >= getMaxSlots(carId)) return prev;
+        slotTimes[carId] = [...carSlots, time];
+      }
+
+      return { slotTimes };
     });
   };
 
-  const getSlotClass = (slot: Slot, carId: number): SlotStatus | 'selected' => {
-    if (selectedSlotTimes[carId]?.includes(slot.time)) return 'selected';
+  const getSlotClass = (carId: number, slot: Slot): SlotStatus | 'selected' => {
+    if (selection.slotTimes[carId]?.includes(slot.time)) return 'selected';
     return slot.status;
   };
 
-  const getBtnClass = (slot: Slot, carId: number) => {
-    const statusClass = getSlotClass(slot, carId);
+  const isSlotDisabled = (carId: number, slot: Slot): boolean => {
+    if (slot.status === 'fullyBooked') return true;
+    const selected = selection.slotTimes[carId] || [];
+    return selected.length >= getMaxSlots(carId) && !selected.includes(slot.time);
+  };
+
+  const getBtnClass = (carId: number, slot: Slot) => {
+    const statusClass = getSlotClass(carId, slot);
+    const disabled = isSlotDisabled(carId, slot);
 
     let statusBtnClass = '';
     switch (statusClass) {
@@ -67,68 +115,103 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) =>
         statusBtnClass = 'btn btn-nearlyfull';
         break;
       default:
-        statusBtnClass = 'btn btn-outline-secondary disabled';
+        statusBtnClass = 'btn btn-outline-secondary';
     }
 
-    return `booking-calendar_slot-btn ${statusBtnClass} btn-sm m-1 position-relative`;
-  };
-
-  const handleRemoveVenue = () => {
-    setSelectedCarIds([]);
-    setSelectedSlotTimes({});
+    return `booking-calendar_slot-btn ${statusBtnClass} btn-sm m-1 position-relative ${
+      disabled ? 'not-allowed' : ''
+    }`;
   };
 
   const handleRemoveCar = (carId: number) => {
-    setSelectedCarIds((prev) => prev.filter((id) => id !== carId));
-    setSelectedSlotTimes((prev) => {
-      const copy = { ...prev };
-      delete copy[carId];
+    setSelection((prev) => {
+      const copy = { ...prev, slotTimes: { ...prev.slotTimes } };
+      delete copy.slotTimes[carId];
       return copy;
     });
   };
 
-  const duplicateSlotTimes: string[] = [];
-  const allSelectedTimes: string[] = [];
-
-  Object.values(selectedSlotTimes).forEach((times) => {
-    times.forEach((time) => {
-      if (allSelectedTimes.includes(time) && !duplicateSlotTimes.includes(time)) {
-        duplicateSlotTimes.push(time);
-      } else {
-        allSelectedTimes.push(time);
-      }
-    });
-  });
-
+  // Duplicate slot detection
+  const duplicateSlotTimes = useMemo(() => {
+    const duplicates: string[] = [];
+    const allTimes: string[] = [];
+    Object.values(selection.slotTimes).forEach((times) =>
+      times.forEach((time) => {
+        if (allTimes.includes(time) && !duplicates.includes(time)) {
+          duplicates.push(time);
+        } else {
+          allTimes.push(time);
+        }
+      }),
+    );
+    return duplicates;
+  }, [selection]);
   return (
     <div className="container my-4 booking-calendar_table-wrapper">
-      {/* Selection Summary */}
-      {(selectedEvent || selectedCarIds.length > 0) && (
+      {showBackWarning && (
+        <div className="alert alert-warning mb-3">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-center">
+            <span className="mb-2 mb-lg-0">Going back will reset your selection. Continue?</span>
+            <div className="d-flex flex-wrap">
+              <button
+                className="btn btn-sm btn-danger mr-2"
+                onClick={() => {
+                  setSelection({ slotTimes: {} });
+                  setShowBackWarning(false);
+                  onBack();
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="btn btn-sm btn-secondary"
+                onClick={() => setShowBackWarning(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(selectedEvent || Object.keys(selection.slotTimes).length > 0) && (
         <div className="mb-3 p-3 booking-calendar_selection-summary">
           {selectedEvent && (
-            <div className="mb-2 d-flex justify-content-between align-items-center">
-              <div>
+            <div className="mb-2 d-flex justify-content-between align-items-flex-start">
+              <div className="text-left">
                 <strong>You have selected the following venue:</strong> {selectedEvent}
               </div>
-              <button className="btn btn-sm btn-outline-danger" onClick={handleRemoveVenue}>
-                Remove
+              <button
+                className="btn btn-sm btn-outline-secondary mb-3"
+                onClick={() => setShowBackWarning(true)}
+              >
+                Back
               </button>
             </div>
           )}
 
-          {selectedCarIds.length > 0 && (
+          {Object.keys(selection.slotTimes).length > 0 && (
             <div className="d-flex flex-column text-left">
               <strong className="mb-1">You have selected the following car(s):</strong>
               <ul className="list-unstyled mb-0">
-                {selectedCarIds.map((carId) => {
-                  const car = cars.find((c) => c.id === carId);
+                {Object.keys(selection.slotTimes).map((carIdStr) => {
+                  const carId = parseInt(carIdStr, 10);
+                  const car = carMap.get(carId);
                   if (!car) return null;
                   return (
                     <li
                       key={carId}
                       className="d-flex justify-content-between align-items-center mb-1"
                     >
-                      <span>{car.name}</span>
+                      <div>
+                        {car.name}
+                        {selection.slotTimes[carId]?.length > 0 &&
+                          getCarAdditionalCost(car) > 0 && (
+                            <span className="ml-2 text-muted">
+                              (Additional Costs: £{getCarAdditionalCost(car).toFixed(2)})
+                            </span>
+                          )}
+                      </div>
                       <button
                         className="btn btn-sm btn-outline-danger"
                         onClick={() => handleRemoveCar(carId)}
@@ -144,14 +227,12 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) =>
         </div>
       )}
 
-      {/* Duplicate Time Warning */}
       {duplicateSlotTimes.length > 0 && (
         <div className="alert alert-warning mb-2">
           You have selected the same time for multiple cars: {duplicateSlotTimes.join(', ')}
         </div>
       )}
 
-      {/* Legend */}
       <div className="mt-3 d-flex flex-wrap align-items-center booking-calendar_legend-container mb-3">
         <div className="booking-calendar_legend booking-calendar_legend-fullybooked flex-fill">
           Fully booked
@@ -167,7 +248,6 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) =>
         </div>
       </div>
 
-      {/* Cars Table */}
       {cars.length === 0 ? (
         <div className="alert alert-warning">No cars or times available.</div>
       ) : (
@@ -178,7 +258,7 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) =>
               <thead className="thead-dark sticky-top">
                 <tr>
                   <th style={{ width: '220px' }}>Car</th>
-                  <th colSpan={6}>Time Slots</th>
+                  <th>Time Slots</th>
                 </tr>
               </thead>
               <tbody>
@@ -206,13 +286,19 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) =>
                         {car.slots.map((slot, idx) => (
                           <button
                             key={idx}
-                            className={`flex-fill ${getBtnClass(slot, car.id)}`}
+                            className={getBtnClass(car.id, slot)}
                             onClick={() => handleSlotClick(car.id, slot.time, slot.status)}
-                            disabled={slot.status === 'fullyBooked'}
+                            disabled={isSlotDisabled(car.id, slot)}
+                            title={
+                              isSlotDisabled(car.id, slot) &&
+                              !selection.slotTimes[car.id]?.includes(slot.time)
+                                ? 'Max slots selected'
+                                : ''
+                            }
                           >
                             {slot.time}
                             {slot.upgrade && (
-                              <div className="booking-calendar_slot-upgrade">{slot.upgrade}</div>
+                              <div className="booking-calendar_slot-upgrade">+{slot.upgrade}</div>
                             )}
                           </button>
                         ))}
@@ -224,7 +310,7 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) =>
             </table>
           </div>
 
-          {/* Mobile Card Layout */}
+          {/* Mobile Cards */}
           <div className="d-block d-md-none booking-calendar_mobile-cards-wrapper">
             {cars.map((car) => (
               <div key={car.id} className="col-12 mb-3 p-0">
@@ -247,35 +333,32 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) =>
                   </div>
                   <div className="card-body booking-calendar_car-card-body p-2">
                     <div className="booking-calendar_slots-grid-mobile">
-                      {car.slots.map((slot, idx) => {
-                        const statusClass = getSlotClass(slot, car.id);
-
-                        const btnClass =
-                          statusClass === 'available'
-                            ? 'btn btn-success btn-sm m-1 flex-fill'
-                            : statusClass === 'selected'
-                              ? 'btn btn-secondary btn-sm m-1 flex-fill'
-                              : statusClass === 'fullyBooked'
-                                ? 'btn btn-danger btn-sm m-1 flex-fill'
-                                : statusClass === 'nearlyFull'
-                                  ? 'btn btn-nearlyfull btn-sm m-1 flex-fill'
-                                  : 'btn btn-outline-secondary btn-sm m-1 disabled flex-fill';
-
-                        return (
-                          <button
-                            key={idx}
-                            className={`${btnClass} booking-calendar_slot-btn`}
-                            onClick={() => handleSlotClick(car.id, slot.time, slot.status)}
-                            disabled={slot.status === 'fullyBooked'}
-                          >
-                            {slot.time}
-                            {slot.upgrade && (
-                              <div className="booking-calendar_slot-upgrade">{slot.upgrade}</div>
-                            )}
-                          </button>
-                        );
-                      })}
+                      {car.slots.map((slot, idx) => (
+                        <button
+                          key={idx}
+                          className={getBtnClass(car.id, slot)}
+                          onClick={() => handleSlotClick(car.id, slot.time, slot.status)}
+                          disabled={isSlotDisabled(car.id, slot)}
+                          title={
+                            isSlotDisabled(car.id, slot) &&
+                            !selection.slotTimes[car.id]?.includes(slot.time)
+                              ? 'Max slots selected'
+                              : ''
+                          }
+                        >
+                          {slot.time}
+                          {slot.upgrade && (
+                            <div className="booking-calendar_slot-upgrade">+{slot.upgrade}</div>
+                          )}
+                        </button>
+                      ))}
                     </div>
+
+                    {selection.slotTimes[car.id]?.length > 0 && getCarAdditionalCost(car) > 0 && (
+                      <div className="mt-2">
+                        <strong>Additional Costs:</strong> £{getCarAdditionalCost(car).toFixed(2)}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

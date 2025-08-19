@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",
+    "@types/bootstrap": "^5.2.10",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-preact": "^0.1.0",

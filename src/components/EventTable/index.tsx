@@ -20,14 +20,10 @@ const EventTable = () => {
   if (selectedEvent) {
     return (
       <div className="p-3">
-        <button className="btn btn-outline-secondary mb-3" onClick={() => setSelectedEvent(null)}>
-          ← Back to Events
-        </button>
-
         <EventTimesTable
           cars={cars}
-          date={selectedEvent.date}
           selectedEvent={selectedEvent.event}
+          onBack={() => setSelectedEvent(null)}
         />
       </div>
     );

@@ -9,7 +9,8 @@
       { "time": "09:00 - 09:30", "status": "available" },
       { "time": "09:30 - 10:00", "status": "fullyBooked" },
       { "time": "10:00 - 10:30", "status": "nearlyFull", "upgrade": "£49.99" }
-    ]
+    ],
+    "maxSlots": 2
   },
   {
     "id": 2,
@@ -29,6 +30,7 @@
       { "time": "13:30 - 14:00", "status": "fullyBooked" },
       { "time": "14:00 - 14:30", "status": "fullyBooked" },
       { "time": "14:30 - 15:00", "status": "fullyBooked" }
-    ]
+    ],
+    "maxSlots": 1
   }
 ]
