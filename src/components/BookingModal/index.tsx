@@ -16,7 +16,6 @@ const BookingModal = ({ selectedExperience, onClose }: Props) => {
       style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
       tabIndex={-1}
       aria-labelledby="bookingModalLabel"
-      aria-hidden="true"
     >
       <div className="modal-dialog booking-calendar_modal-dialog modal-dialog-centered">
         <div className="modal-content booking-calendar_modal-content">
