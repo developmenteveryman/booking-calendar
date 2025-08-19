@@ -24,7 +24,7 @@ interface Props {
   selectedEvent?: string;
 }
 
-const EventTimesTable: FunctionalComponent<Props> = ({ cars, date, selectedEvent }) => {
+const EventTimesTable: FunctionalComponent<Props> = ({ cars, selectedEvent }) => {
   const [selectedCarIds, setSelectedCarIds] = useState<number[]>([]);
   const [selectedSlotTimes, setSelectedSlotTimes] = useState<{ [carId: number]: string[] }>({});
 
@@ -152,15 +152,19 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, date, selectedEvent
       )}
 
       {/* Legend */}
-      <div className="mt-3 d-flex flex-wrap align-items-center mb-3">
-        <div className="booking-calendar_legend booking-calendar_legend-fullybooked">
+      <div className="mt-3 d-flex flex-wrap align-items-center booking-calendar_legend-container mb-3">
+        <div className="booking-calendar_legend booking-calendar_legend-fullybooked flex-fill">
           Fully booked
         </div>
-        <div className="booking-calendar_legend booking-calendar_legend-nearlyfull">
+        <div className="booking-calendar_legend booking-calendar_legend-nearlyfull flex-fill">
           Nearly full
         </div>
-        <div className="booking-calendar_legend booking-calendar_legend-available">Available</div>
-        <div className="booking-calendar_legend booking-calendar_legend-selected">Selected</div>
+        <div className="booking-calendar_legend booking-calendar_legend-available flex-fill">
+          Available
+        </div>
+        <div className="booking-calendar_legend booking-calendar_legend-selected flex-fill">
+          Selected
+        </div>
       </div>
 
       {/* Cars Table */}
@@ -221,10 +225,10 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, date, selectedEvent
           </div>
 
           {/* Mobile Card Layout */}
-          <div className="d-block d-md-none mobile-cards-wrapper">
+          <div className="d-block d-md-none booking-calendar_mobile-cards-wrapper">
             {cars.map((car) => (
-              <div key={car.id} className="col-12 mb-3">
-                <div className="card car-card">
+              <div key={car.id} className="col-12 mb-3 p-0">
+                <div className="card booking-calendar_car-card">
                   <div className="position-relative">
                     {car.image && (
                       <img
@@ -233,14 +237,16 @@ const EventTimesTable: FunctionalComponent<Props> = ({ cars, date, selectedEvent
                         alt={car.name}
                       />
                     )}
-                    <div className="car-card-overlay" />
+                    <div className="booking-calendar_car-card-overlay" />
                     {car.upgrade && (
-                      <span className="badge badge-danger upgrade-badge">{car.upgrade}</span>
+                      <span className="badge badge-danger booking-calendar_upgrade-badge">
+                        {car.upgrade}
+                      </span>
                     )}
-                    <div className="car-card-title">{car.name}</div>
+                    <div className="booking-calendar_car-card-title">{car.name}</div>
                   </div>
-                  <div className="card-body p-2">
-                    <div className="slots-grid-mobile">
+                  <div className="card-body booking-calendar_car-card-body p-2">
+                    <div className="booking-calendar_slots-grid-mobile">
                       {car.slots.map((slot, idx) => {
                         const statusClass = getSlotClass(slot, car.id);
 
