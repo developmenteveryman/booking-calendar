@@ -1,0 +1,198 @@
+.booking-calendar_modal-event-title {
+  text-transform: uppercase;
+  font-style: italic;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.booking-calendar_custom-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(41, 41, 41, 0.9);
+  backdrop-filter: blur(3px);
+  z-index: 1040;
+}
+
+@media (min-width: 576px) {
+  .booking-calendar_modal-event-dialog {
+    max-width: 600px;
+    margin: 1.75rem auto;
+  }
+}
+.venue-item {
+  border: 0.0625rem solid #000;
+  -webkit-border-radius: 0.625rem;
+  -moz-border-radius: 0.625rem;
+  -ms-border-radius: 0.625rem;
+  border-radius: 0.625rem;
+  background: #e30613;
+  position: relative;
+}
+
+.venue-item h3.title {
+  position: absolute;
+  top: 0.625rem;
+  left: 0;
+  padding: 0.625rem 1.5625rem 0.625rem 1.5625rem;
+  color: #e30613;
+  font-size: 1.625rem;
+  /* font-family: 'Not Just Groovy'; */
+  font-weight: 400;
+  font-style: normal;
+  background: #fff;
+  display: inline-block;
+  border-radius: 0 0.625rem 0.625rem 0;
+  z-index: 1;
+}
+
+.venue-item .directions {
+  height: 100%;
+  background: #000;
+  margin-left: 0.9375rem;
+  padding: 0.625rem;
+  padding-top: 5.25rem;
+  overflow: hidden;
+}
+
+.venue-item .directions h6 {
+  color: #fff;
+  /* font-family: 'TodaySHOP-Bold'; */
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1rem;
+  font-style: italic;
+  margin-bottom: 0.9375rem;
+}
+
+.venue-item .track {
+  position: relative;
+  float: none;
+  overflow: hidden;
+  text-align: center;
+  height: 100%;
+}
+
+.venue-item .track img {
+  max-width: 100%;
+  -ms-interpolation-mode: bicubic;
+  display: inline-block;
+  vertical-align: middle;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.venue-item .detail-panel {
+  background: #000;
+  border: 0.0625rem solid #fff;
+  -webkit-border-radius: 0.625rem;
+  -moz-border-radius: 0.625rem;
+  -ms-border-radius: 0.625rem;
+  border-radius: 0.625rem;
+  padding: 0.625rem;
+  text-align: center;
+  color: #fff;
+  font-size: 0.9375rem;
+  /* font-family: 'Not Just Groovy'; */
+  font-weight: 400;
+  font-style: normal;
+  height: -webkit-calc(100% - 20px);
+  height: -moz-calc(100% - 20px);
+  height: calc(100% - 20px);
+  margin: 0.625rem 0.9375rem 0.625rem 0.625rem;
+  overflow: hidden;
+}
+
+.venue-item .detail-panel h6 {
+  /* font-family: 'Not Just Groovy'; */
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.3125rem;
+  color: #e30613;
+}
+
+.venue-item .detail-panel .section {
+  margin-bottom: 1.9375rem;
+}
+
+.venue-item .venue-item-height {
+  height: 340px;
+}
+.venue-block {
+  box-shadow: 0 0 5px black;
+  font-size: 0.75rem;
+  background: grey;
+  color: white;
+}
+
+.venue-block h3 {
+  position: relative;
+  margin-left: -1rem !important;
+  padding-left: 1rem;
+  padding-right: 3rem;
+  line-height: 2.5rem;
+  padding-bottom: 0rem !important;
+  padding-top: 0.2rem;
+  overflow: hidden;
+  font-size: 1rem;
+}
+
+.venue-block h3 span {
+  color: white;
+  position: relative;
+}
+
+.venue-block h3:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  -webkit-transform-origin: 100% 100%;
+  -ms-transform-origin: 100% 100%;
+  transform-origin: 100% 100%;
+  -webkit-transform: skewX(30deg);
+  -ms-transform: skewX(30deg);
+  transform: skewX(30deg);
+  border-bottom: 3px solid #ed2024;
+}
+
+.venue-block h3.inverse {
+  color: black;
+  margin-left: -1rem !important;
+}
+
+.venue-block h3.inverse:before {
+  background-color: #ed2024;
+}
+
+.venue-block .track-bg {
+  background-image: url('../../../public/images/trackbg.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 800;
+}
+
+.sticky-below-header {
+  position: sticky;
+  top: 59px;
+  z-index: 90;
+}
+
+.text-truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
