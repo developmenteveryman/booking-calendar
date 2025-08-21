@@ -1,0 +1,25 @@
+.booking-calendar_modal-event-title {
+  text-transform: uppercase;
+  font-style: italic;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.booking-calendar_custom-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(41, 41, 41, 0.9);
+  backdrop-filter: blur(3px);
+  z-index: 1040;
+}
+
+@media (min-width: 576px) {
+  .booking-calendar_modal-event-dialog {
+    max-width: 600px;
+    margin: 1.75rem auto;
+  }
+}

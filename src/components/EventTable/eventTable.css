@@ -1,0 +1,99 @@
+.table .thead-dark th {
+    color: #fff;
+    background-color: #212529;
+    border-color: #32383e;
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #dee2e6;
+}
+
+.table td:last-child {
+    white-space: nowrap;
+}
+
+.table td:last-child .btn {
+    display: inline-block;
+    min-width: 60px;
+}
+
+/* Buttons */
+.booking-calendar_btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+    border-radius: 0 !important;
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+}
+
+.booking-calendar_btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+    color: #ffffff !important;
+}
+
+.booking-calendar_btn-success {
+    background-color: #3baa35 !important;
+    border-color: #3baa35 !important;
+    color: #fff !important;
+    border-radius: 0 !important;
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+}
+
+.booking-calendar_btn-success:hover {
+    background-color: #318d2c !important;
+    border-color: #2e8329 !important;
+    color: #ffffff !important;
+}
+
+/* ========== MOBILE VIEW ========== */
+
+.mobile-event-title {
+    background-color: #212529 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    padding: 12px !important;
+    border-radius: 6px 6px 0 0 !important;
+    margin: 0 !important;
+    text-transform: uppercase !important;
+    font-style: italic !important;
+}
+
+.mobile-event-card {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 6px !important;
+    margin-bottom: 1rem !important;
+    overflow: hidden !important;
+    background-color: #fff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.mobile-event-details {
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+}
+
+.mobile-event-details div {
+    margin-bottom: 0.5rem !important;
+}
+
+.mobile-event-buttons {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 1rem !important;
+}
+
+.mobile-event-buttons button {
+    flex: 1 !important; /* Buttons take full width inside card */
+}

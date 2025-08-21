@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "everyman/booking-calendar",
+    "version": "0.1.0",
+    "title": "Booking Calendar",
+    "category": "widgets",
+    "icon": "calendar",
+    "attributes": {
+        "commodityId": {
+            "type": "string"
+        },
+        "className": {
+            "type": "string"
+        },
+        "display": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "uuid": {
+            "type": "string"
+        }
+    },
+    "editorScript": "file:./index.tsx.js",
+    "editorStyle": "file:./index.tsx.css",
+    "style": "file:./frontend.tsx.css",
+    "render": "file:./render.php",
+    "viewScript": "file:./frontend.tsx.js"
+}

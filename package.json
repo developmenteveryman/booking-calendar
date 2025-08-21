@@ -1,0 +1,37 @@
+{
+    "name": "booking-calendar",
+    "version": "0.0.0",
+    "description": "",
+    "scripts": {
+        "build": "wp-scripts build src/index.tsx src/frontend.tsx",
+        "start": "wp-scripts start src/index.tsx src/frontend.tsx",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/moment": "^2.11.29",
+        "@types/react": "^19.1.10",
+        "@types/react-dom": "^19.1.7",
+        "@types/wordpress__block-editor": "^11.0.0",
+        "@types/wordpress__blocks": "^12.0.0",
+        "@types/wordpress__components": "^23.0.0",
+        "@wordpress/scripts": "^30.21.0",
+        "eslint": "^9.33.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.4",
+        "eslint-plugin-react": "^7.37.5",
+        "prettier": "^3.6.2",
+        "ts-loader": "^9.5.2",
+        "typescript": "~5.8.3"
+    },
+    "peerDependencies": {
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0"
+    },
+    "dependencies": {
+        "@wordpress/block-editor": "^15.1.0",
+        "@wordpress/blocks": "^15.1.0"
+    }
+}
