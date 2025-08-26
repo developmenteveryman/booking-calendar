@@ -9,22 +9,15 @@ type SummaryProps = {
     selectedEvent: Nullable<EventRow>;
     selectionRequired: SelectionRequired[];
     eventCars: SelectableCar[];
-    selectedCarIds: number[];
     actions: {
         onBackToEvents: MouseEventHandler<HTMLButtonElement>;
-        onRemoveVenue: MouseEventHandler<HTMLButtonElement>;
+        onClear: MouseEventHandler<HTMLButtonElement>;
         onRemoveCar: MouseEventHandler<HTMLButtonElement>;
     };
 };
 
-const Summary: FC<SummaryProps> = ({
-    eventCars,
-    selectionRequired,
-    selectedEvent,
-    selectedCarIds,
-    actions,
-}) => {
-    const { onBackToEvents, onRemoveVenue, onRemoveCar } = actions;
+const Summary: FC<SummaryProps> = ({ eventCars, selectionRequired, selectedEvent, actions }) => {
+    const { onBackToEvents, onClear, onRemoveCar } = actions;
     const {
         state: { appliedSelection },
     } = useEventTimesTableContext();
@@ -63,7 +56,7 @@ const Summary: FC<SummaryProps> = ({
                         </button>
                         <button
                             className="btn btn-sm btn-outline-danger mt-0"
-                            onClick={onRemoveVenue}
+                            onClick={onClear}
                             style={{ width: '64px', whiteSpace: 'nowrap' }}
                         >
                             ↺ Clear
@@ -99,8 +92,8 @@ const Summary: FC<SummaryProps> = ({
                                         <button
                                             data-carid={car?.componentId}
                                             data-selectionposition={JSON.stringify(
-                                                    car?.componentPosition.map((item) => item - 1),
-                                                )}
+                                                car?.componentPosition.map((item) => item - 1),
+                                            )}
                                             className="btn btn-sm btn-outline-danger"
                                             onClick={onRemoveCar}
                                         >

@@ -45,11 +45,10 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
     });
 
     const [confirming, setConfirming] = useState(false);
-    const [selectedCarIds, setSelectedCarIds] = useState<number[]>([]);
     const [selectedSlotTimes, setSelectedSlotTimes] = useState<{ [carId: number]: string[] }>({});
     const {
         state: { appliedSelection },
-        actions: { setAppliedSelection },
+        actions: { clearAppliedSelection, setAppliedSelection },
     } = useEventTimesTableContext();
 
     const duplicateSlotTimes: string[] = useMemo(
@@ -98,8 +97,6 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
 
             if (status === 'fullyBooked') return;
 
-            setSelectedCarIds((prev) => (prev.includes(carId) ? prev : [...prev, carId]));
-
             setSelectedSlotTimes((prev) => {
                 const times = prev[carId] || [];
                 return {
@@ -140,10 +137,10 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
         [selectedEvent, requiredPositions, setAppliedSelection],
     );
 
-    const handleRemoveVenue = useCallback<React.MouseEventHandler<HTMLButtonElement>>((e) => {
+    const handleClear = useCallback<React.MouseEventHandler<HTMLButtonElement>>((e) => {
         e.preventDefault();
-        setSelectedCarIds([]);
         setSelectedSlotTimes({});
+        clearAppliedSelection();
     }, []);
 
     const handleRemoveCar = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
@@ -168,14 +165,13 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
                 return next;
             });
 
-            setSelectedCarIds((prev) => prev.filter((id) => id !== carId));
             setSelectedSlotTimes((prev) => {
                 const copy = { ...prev };
                 delete copy[carId];
                 return copy;
             });
         },
-        [setAppliedSelection, setSelectedCarIds, setSelectedSlotTimes],
+        [setAppliedSelection, setSelectedSlotTimes],
     );
 
     const handleCarView: React.MouseEventHandler<HTMLButtonElement> = (event) => {
@@ -238,15 +234,14 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
     return (
         <div className="container my-4 py-2 booking-calendar_table-wrapper">
             {/* Selection Summary */}
-            {(selectedEvent || selectedCarIds.length > 0) && (
+            {selectedEvent && (
                 <Summary
                     eventCars={cars}
                     selectionRequired={requiredPositions}
                     selectedEvent={selectedEvent}
-                    selectedCarIds={selectedCarIds}
                     actions={{
                         onBackToEvents,
-                        onRemoveVenue: handleRemoveVenue,
+                        onClear: handleClear,
                         onRemoveCar: handleRemoveCar,
                     }}
                 />

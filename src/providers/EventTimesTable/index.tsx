@@ -10,7 +10,7 @@ function reducer(state: State, action: Action): State {
         case 'reset':
             return { uuid: action.uuid, appliedSelection: {} };
         case 'set-appliedselections':
-            console.log(action.payload);
+            // console.log(action.payload);
             return { ...state, appliedSelection: action.payload };
         default:
             return state;
@@ -38,6 +38,7 @@ export const EventTimesTableProvider: React.FC<{ uuid: string; children: React.R
 
     const actions = {
         setAppliedSelection: setAppliedSelection(state, dispatch),
+        clearAppliedSelection: () => dispatch({ type: 'reset', uuid }),
     };
 
     return (

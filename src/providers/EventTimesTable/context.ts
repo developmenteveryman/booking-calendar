@@ -14,6 +14,7 @@ const EventTimesTableContext = createContext<
               setAppliedSelection: (
                   update: AppliedSelection | ((prev: AppliedSelection) => AppliedSelection),
               ) => AppliedSelection;
+              clearAppliedSelection: () => void;
           };
       }
     | undefined
