@@ -41,6 +41,11 @@
     color: #ffffff !important;
 }
 
+.booking-calendar_btn-secondary:focus {
+    border-color: #545b62 !important;
+    box-shadow: none !important;
+}
+
 .booking-calendar_btn-success {
     background-color: #3baa35 !important;
     border-color: #3baa35 !important;
@@ -54,6 +59,11 @@
     background-color: #318d2c !important;
     border-color: #2e8329 !important;
     color: #ffffff !important;
+}
+
+.booking-calendar_btn-success:focus {
+    border-color: #2e8329 !important;
+    box-shadow: none !important;
 }
 
 /* ========== MOBILE VIEW ========== */

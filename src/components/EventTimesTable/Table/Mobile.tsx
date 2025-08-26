@@ -1,7 +1,9 @@
 import type { FC } from 'react';
 import { getSlotClass, type TableProps } from '.';
+import type { ComponentTypeStatus } from '../../../types/component';
+import { useIsSlotDisabled } from '../../../hooks/useIsSlotDisabled';
 
-const getBtnClass = (statusClass: string) => {
+const getBtnClass = (statusClass: ComponentTypeStatus) => {
     let statusBtnClass = '';
     switch (statusClass) {
         case 'available':
@@ -10,10 +12,10 @@ const getBtnClass = (statusClass: string) => {
         case 'selected':
             statusBtnClass = 'btn btn-secondary btn-sm m-1 flex-fill';
             break;
-        case 'fullyBooked':
+        case 'full':
             statusBtnClass = 'btn btn-danger btn-sm m-1 flex-fill';
             break;
-        case 'nearlyFull':
+        case 'alreadyBooked':
             statusBtnClass = 'btn btn-nearlyfull btn-sm m-1 flex-fill';
             break;
         default:
@@ -28,6 +30,7 @@ const Mobile: FC<TableProps> = ({
     selectedSlotTimes,
     handleSlotClick,
     handleCarView,
+    selectionRequired
 }) => {
     const cars = eventCars.map((car) => ({
         ...car,
@@ -36,7 +39,7 @@ const Mobile: FC<TableProps> = ({
             btnClass: getBtnClass(getSlotClass(slot, car.componentId, selectedSlotTimes)),
         })),
     }));
-
+    const { isSlotDisabled } = useIsSlotDisabled(cars, selectionRequired);
     return (
         <div className="d-block d-md-none booking-calendar_mobile-cards-wrapper">
             {cars.map((car) => (
@@ -62,27 +65,53 @@ const Mobile: FC<TableProps> = ({
                                 </span>
                             )}
                             <div className="booking-calendar_car-card-title">
-                                {car.websiteTitle} ⓘ
+                                {car.websiteTitle}
+                                <button
+                                    type="button"
+                                    className="btn btn-link p-0 ml-1 mt-0 text-white text-decoration-none"
+                                    title="View more"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    style={{ lineHeight: 0, fontSize: '0.9rem' }}
+                                    onClick={handleCarView}
+                                >
+                                    ⓘ
+                                </button>
                             </div>
                         </div>
                         <div className="card-body booking-calendar_car-card-body p-2">
                             <div className="booking-calendar_slots-grid-mobile">
-                                {car.componentTimes.map((slot, idx) => (
-                                    <button
-                                        key={idx}
-                                        className={`booking-calendar_slot-btn ${slot.btnClass}`}
-                                        onClick={handleSlotClick}
-                                        data-selectionindex={idx}
-                                        disabled={slot.componentTimeStatus === 'fullyBooked'}
-                                    >
-                                        {slot.componentTime}
-                                        {slot.supplement && (
-                                            <div className="booking-calendar_slot-upgrade">
-                                                {slot.supplement}
-                                            </div>
-                                        )}
-                                    </button>
-                                ))}
+                                {car.componentTimes.map((slot, idx) => {
+                                    const { disabled, title } = isSlotDisabled(
+                                        Number(car.componentId),
+                                        Number(slot.componentTimeId),
+                                        slot.componentTime,
+                                    );
+                                    return (
+                                        <button
+                                            key={idx}
+                                            className={`booking-calendar_slot-btn ${slot.btnClass}`}
+                                            onClick={handleSlotClick}
+                                            data-componentid={car.componentId}
+                                            data-componenttime={slot.componentTime}
+                                            data-componenttimestatus={slot.componentTimeStatus}
+                                            data-selectionindex={idx}
+                                            data-selectionposition={JSON.stringify(
+                                                car.componentPosition.map((item) => item - 1),
+                                            )}
+                                            data-componenttimeid={slot.componentTimeId}
+                                            disabled={disabled}
+                                            title={title}
+                                        >
+                                            {slot.componentTime}
+                                            {slot.supplement && (
+                                                <div className="booking-calendar_slot-upgrade">
+                                                    {slot.supplement}
+                                                </div>
+                                            )}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

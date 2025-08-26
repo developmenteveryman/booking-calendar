@@ -1,23 +1,24 @@
-import type { FC } from 'react';
+import { type FC } from 'react';
 import { getSlotClass, type TableProps } from '.';
+import { useIsSlotDisabled } from '../../../hooks/useIsSlotDisabled';
+import type { ComponentTypeStatus } from '../../../types/component';
+// import { isSlotDisabled } from '..';
 
-const getBtnClass = (statusClass: string) => {
+const getBtnClass = (statusClass: ComponentTypeStatus) => {
     let statusBtnClass = '';
     switch (statusClass) {
-        case 'available':
-            statusBtnClass = 'btn btn-success';
-            break;
         case 'selected':
             statusBtnClass = 'btn btn-secondary';
             break;
-        case 'fullyBooked':
+        case 'full':
             statusBtnClass = 'btn btn-danger';
             break;
-        case 'nearlyFull':
+        case 'alreadyBooked':
             statusBtnClass = 'btn btn-nearlyfull';
             break;
+        case 'available':
         default:
-            statusBtnClass = 'btn btn-outline-secondary disabled';
+            statusBtnClass = 'btn btn-success';
     }
 
     return `booking-calendar_slot-btn ${statusBtnClass} btn-sm m-1 position-relative`;
@@ -28,6 +29,7 @@ const Desktop: FC<TableProps> = ({
     handleSlotClick,
     handleCarView,
     selectedSlotTimes,
+    selectionRequired,
 }) => {
     const cars = eventCars.map((car) => ({
         ...car,
@@ -37,6 +39,7 @@ const Desktop: FC<TableProps> = ({
         })),
     }));
 
+    const { isSlotDisabled } = useIsSlotDisabled(cars, selectionRequired);
     return (
         <div className="table-responsive d-none d-md-block">
             <table className="table table-bordered align-middle text-center mb-0">
@@ -73,25 +76,44 @@ const Desktop: FC<TableProps> = ({
                                         </div>
                                     )}
                                     <div className="booking-calendar_car-name">
-                                        {car.websiteTitle} ⓘ
+                                        {car.websiteTitle}{' '}
+                                        <button
+                                            type="button"
+                                            className="btn btn-link p-0 m-0 text-white text-decoration-none"
+                                            title="View more"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            style={{ lineHeight: 0, fontSize: '0.9rem' }}
+                                            onClick={handleCarView}
+                                        >
+                                            ⓘ
+                                        </button>
                                     </div>
                                 </div>
                             </td>
                             <td className="p-0 align-middle">
-                                <div className="d-flex flex-wrap align-items-center booking-calendar_slots-container">
+                                <div className="booking-calendar_slots-container">
                                     {car.componentTimes.map((slot, idx) => {
+                                        const { disabled, title } = isSlotDisabled(
+                                            Number(car.componentId),
+                                            Number(slot.componentTimeId),
+                                            slot.componentTime,
+                                        );
                                         return (
                                             <button
                                                 data-componentid={car.componentId}
                                                 data-componenttime={slot.componentTime}
                                                 data-componenttimestatus={slot.componentTimeStatus}
                                                 data-selectionindex={idx}
+                                                data-selectionposition={JSON.stringify(
+                                                    car.componentPosition.map((item) => item - 1),
+                                                )}
+                                                data-componenttimeid={slot.componentTimeId}
                                                 key={idx}
-                                                className={`flex-fill ${slot.btnClass}`}
+                                                className={slot.btnClass}
                                                 onClick={handleSlotClick}
-                                                disabled={
-                                                    slot.componentTimeStatus === 'fullyBooked'
-                                                }
+                                                disabled={disabled}
+                                                title={title}
                                             >
                                                 {slot.componentTime}
                                                 {slot.supplement && (

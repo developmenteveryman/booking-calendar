@@ -2,6 +2,8 @@ import type { FC, MouseEventHandler } from 'react';
 import type { EventRow } from '../../../types/event';
 import type { Nullable } from '../../../types/common';
 import type { SelectableCar, SelectionRequired } from '../../../types/component';
+import { useEventTimesTableContext } from '../../../providers/EventTimesTable/context';
+import type { AppliedSelection } from '../../../types/reservation';
 
 type SummaryProps = {
     selectedEvent: Nullable<EventRow>;
@@ -23,6 +25,26 @@ const Summary: FC<SummaryProps> = ({
     actions,
 }) => {
     const { onBackToEvents, onRemoveVenue, onRemoveCar } = actions;
+    const {
+        state: { appliedSelection },
+    } = useEventTimesTableContext();
+
+    const selectedCarsForSelection = (selectionIndex: number) => {
+        const sel: AppliedSelection[0] = appliedSelection[selectionIndex] || {
+            carIds: [],
+            timeIds: [],
+        };
+        return sel.carIds
+            .map((id, idx) => {
+                const car = eventCars.find((c) => c.componentId === id);
+                if (!car) return null;
+                return {
+                    ...car,
+                    timeId: sel.timeIds[idx],
+                };
+            })
+            .filter(Boolean);
+    };
     return (
         <div className="mb-3 mt-3 p-3 booking-calendar_selection-summary">
             {selectedEvent && (
@@ -31,9 +53,9 @@ const Summary: FC<SummaryProps> = ({
                         <strong>You have selected the following venue:</strong>{' '}
                         {selectedEvent.venuedescription}
                     </div>
-                    <div>
+                    <div className="text-right">
                         <button
-                            className="btn btn-sm btn-outline-secondary mt-0 mr-1"
+                            className="btn btn-sm btn-outline-secondary mt-0 mb-1 mb-md-0 mr-0 mr-md-1"
                             onClick={onBackToEvents}
                             style={{ width: '64px' }}
                         >
@@ -42,7 +64,7 @@ const Summary: FC<SummaryProps> = ({
                         <button
                             className="btn btn-sm btn-outline-danger mt-0"
                             onClick={onRemoveVenue}
-                            style={{ width: '64px' }}
+                            style={{ width: '64px', whiteSpace: 'nowrap' }}
                         >
                             ↺ Clear
                         </button>
@@ -54,9 +76,7 @@ const Summary: FC<SummaryProps> = ({
                 const availableCars = eventCars.filter((car) =>
                     car.componentPosition?.includes(selection.position),
                 );
-                const selectedCars = selectedCarIds
-                    .map((id) => availableCars.find((car) => car.componentId === id))
-                    .filter(Boolean);
+                const selectedCars = selectedCarsForSelection(selection.index);
 
                 return (
                     <div key={selection.index} className="d-flex flex-column text-left mb-2">
@@ -78,6 +98,9 @@ const Summary: FC<SummaryProps> = ({
                                         <span>{car?.websiteTitle}</span>
                                         <button
                                             data-carid={car?.componentId}
+                                            data-selectionposition={JSON.stringify(
+                                                    car?.componentPosition.map((item) => item - 1),
+                                                )}
                                             className="btn btn-sm btn-outline-danger"
                                             onClick={onRemoveCar}
                                         >

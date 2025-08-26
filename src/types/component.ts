@@ -17,11 +17,13 @@ export type Component = {
 export type ComponentTime = {
     componentTimeId: number;
     componentTime: string; // Formatted time string (e.g. '14:00 - 14:30')
-    componentStartTime: string;
-    componentEndTime: string;
-    componentTimeStatus: 'available' | 'nearlyFull' | 'fullyBooked';
-    supplement?: string; // e.g. 'Â£16.67'
+    componentStartTime: number;
+    componentEndTime: number;
+    componentTimeStatus: 'full' | 'alreadyBooked' | 'available';
+    supplement?: string; // e.g. '£16.67'
 };
+
+export type ComponentTypeStatus = ComponentTime['componentTimeStatus'] | 'selected';
 
 export type SelectionRequired = {
     name: string;
@@ -35,17 +37,6 @@ export type SelectableCar = {
     description: string;
     websiteTitle: string;
     image: string;
-    supplement?: string; // e.g. 'Â£16.67'
+    supplement?: string; // e.g. '£16.67'
     componentTimes: ComponentTime[];
 };
-// export type GetComponentResponse = {
-//     status: 'success' | 'error';
-//     message: string;
-//     venueid: string;
-//     details: Component;
-// };
-
-// export type GetCommodityComponentsResponse = {
-//     fixed: Array<SelectionRequired>;
-//     selectable: Array<SelectionRequired>;
-// };

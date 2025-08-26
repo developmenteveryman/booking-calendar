@@ -10,7 +10,7 @@ type HookArguments = {
 
 type HookReturn = {
     cars: SelectableCar[];
-    selectionRequired: SelectionRequired[];
+    requiredPositions: SelectionRequired[];
     isLoading: boolean;
     loadCars: () => Promise<void>;
 };
@@ -19,7 +19,7 @@ export default function useEventComponents({ uuid, venueDateId }: HookArguments)
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [cars, setCars] = useState<SelectableCar[]>([]);
-    const [selectionRequired, setSelectionRequired] = useState<SelectionRequired[]>([]);
+    const [requiredPositions, setRequiredPositions] = useState<SelectionRequired[]>([]);
 
     const useApi = useMemo<MatrixAvailability | undefined>(
         () => globalThis.matrixAvailabilityInstances?.[uuid],
@@ -35,7 +35,7 @@ export default function useEventComponents({ uuid, venueDateId }: HookArguments)
             setIsLoading(true);
             const response = await useApi.getEventComponents(venueDateId);
             setCars(response.components || []);
-            setSelectionRequired(response.selectionsRequired || []);
+            setRequiredPositions(response.selectionsRequired || []);
             setIsLoading(false);
         } catch (error) {
             console.warn('Error loading events:', error);
@@ -51,5 +51,5 @@ export default function useEventComponents({ uuid, venueDateId }: HookArguments)
         };
     }, [loadCars]);
 
-    return { cars, selectionRequired, loadCars, isLoading };
+    return { cars, requiredPositions, loadCars, isLoading };
 }

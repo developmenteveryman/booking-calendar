@@ -26,10 +26,11 @@ export default function useEventRows({ uuid }: HookArguments): HookReturn {
 
         try {
             setIsLoading(true);
+            const timezoneOffset = moment().utcOffset() * 60;
             const response = await api.getEventsList().then((data) => {
                 return Object.values(data).map<EventRow>((event) => ({
                     date: event.date,
-                    dateString: moment.unix(event.date).format('DD MMM YYYY'),
+                    dateString: moment.unix(event.date - timezoneOffset).format('DD MMM YYYY'),
                     venueid: event.venueid,
                     venuedescription: event.venuedescription,
                     venuedateid: event.venuedateid,
@@ -55,8 +56,6 @@ export default function useEventRows({ uuid }: HookArguments): HookReturn {
             debouncedLoader.cancel();
         };
     }, [loadEvents]);
-
-    console.log(api);
 
     return { events, loadEvents, isLoading };
 }

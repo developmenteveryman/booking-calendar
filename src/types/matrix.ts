@@ -1,3 +1,4 @@
+import type { ComponentTime, SelectableCar } from './component';
 import type { Event, GetEventComponentsResponse } from './event';
 
 export type MatrixAvailability = {
@@ -10,21 +11,31 @@ export type MatrixAvailability = {
         venueId?: any,
         date?: any,
     ) => void;
+    selectEvent: (venueId: number, timestamp: number) => void;
     venueOptions: (dateRanges?: any) => void;
     applySelections: (selections: any, delayRefresh?: boolean) => void;
     dateAvailability: (date: any) => string | false;
     changedDate: (e: { date: Date }, date?: number) => void;
-    changedPeriod: (e?: any) => boolean;
+    changedPeriod: (e: { date: Date }) => boolean;
+    confirmReservation: (
+        carIds: SelectableCar['componentId'][],
+        timeIds: ComponentTime['componentTimeId'][],
+        dateStamp: number,
+        timestamp: number,
+        timezoneOffset?: number,
+        onFinish?: () => void,
+    ) => Promise<boolean>;
     getEventsList: () => Promise<Record<number | string, Event>>;
     getEventComponents: (venueDateId: number) => Promise<GetEventComponentsResponse>;
     getComponentsTimes: (venueDateId: number) => Promise<any>;
-    selectVenue: (venueId: number, filterVenue?: any, delayRefresh?: boolean) => void;
+    selectVenue: (venueId: number, filterVenue?: any, delayRefresh?: boolean, date?: Date) => void;
     drawTimes: (times: any) => void;
     selectTime: (timeId: any, element: any) => void;
     reservation: (reservations: any) => void;
     scrollTo: (element: any, alignment?: string) => void;
     toggleUpgrades: (element?: any) => void;
 
+    that: MatrixAvailability;
     availableDates: any;
     availableVenues: any;
     availableTimes: any;

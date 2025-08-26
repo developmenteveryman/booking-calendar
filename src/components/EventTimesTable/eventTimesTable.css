@@ -38,28 +38,6 @@
     padding: 4px;
 }
 
-.booking-calendar_slots-container {
-    min-height: 120px;
-    padding: 4px;
-    justify-content: flex-start;
-
-    max-height: 300px;
-    overflow-x: auto;
-}
-
-.booking-calendar_slot-upgrade {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: #ff0000;
-    color: #fff;
-    font-size: 10px;
-    border-radius: 3px;
-    padding: '1px';
-    font-weight: bold;
-    pointer-events: none;
-}
-
 .booking-calendar_slot-btn {
     min-width: 0;
     height: 32px;
@@ -95,7 +73,7 @@
     background-color: #28a745;
 }
 .booking-calendar_legend-selected {
-    background-color: #6c757d;
+    background-color: #181818;
 }
 
 .btn-nearlyfull {
@@ -110,10 +88,10 @@
 
 @media (min-width: 768px) {
     .booking-calendar_slots-container {
-        display: flex;
-        flex-wrap: wrap;
-        max-height: 110px;
-        overflow-y: auto;
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        max-height: 300px !important;
+        overflow-y: auto !important;
     }
 
     .booking-calendar_slots-container::-webkit-scrollbar {
@@ -145,7 +123,7 @@
 }
 
 .booking-calendar_car-card-body {
-    max-height: 190px;
+    max-height: 300px;
     overflow-y: auto;
 }
 
@@ -199,10 +177,11 @@
 }
 
 .booking-calendar_slots-grid-mobile {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
     gap: 0.25rem;
     padding: 0.25rem;
+    position: relative;
 }
 
 .booking-calendar_slots-grid-mobile .booking-calendar_slot-btn {
