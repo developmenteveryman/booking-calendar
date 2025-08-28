@@ -5,7 +5,7 @@ const Mobile: FC<TableProps> = ({ events, actions }) => {
     const { onViewEvent, onSelectEvent } = actions;
 
     return (
-        <div className="d-md-none">
+        <div className="d-md-none booking-calendar_cards-wrapper">
             {events.map((event, index) => (
                 <div key={index} className="mobile-event-card">
                     <h5 className="mobile-event-title">{event.venuedescription}</h5>

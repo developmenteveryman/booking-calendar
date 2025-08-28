@@ -11,13 +11,13 @@ type SummaryProps = {
     eventCars: SelectableCar[];
     actions: {
         onBackToEvents: MouseEventHandler<HTMLButtonElement>;
-        onClear: MouseEventHandler<HTMLButtonElement>;
+        onRefresh: MouseEventHandler<HTMLButtonElement>;
         onRemoveCar: MouseEventHandler<HTMLButtonElement>;
     };
 };
 
 const Summary: FC<SummaryProps> = ({ eventCars, selectionRequired, selectedEvent, actions }) => {
-    const { onBackToEvents, onClear, onRemoveCar } = actions;
+    const { onBackToEvents, onRefresh, onRemoveCar } = actions;
     const {
         state: { appliedSelection },
     } = useEventTimesTableContext();
@@ -36,30 +36,39 @@ const Summary: FC<SummaryProps> = ({ eventCars, selectionRequired, selectedEvent
                     timeId: sel.timeIds[idx],
                 };
             })
-            .filter(Boolean);
+            .filter((item) => item !== null);
     };
+
+    const selectionRequiredAmount = selectionRequired.reduce(
+        (acc, curr) => {
+            acc[curr.name] = (acc[curr.name] || 0) + 1;
+            return acc;
+        },
+        {} as Record<SelectionRequired['name'], number>,
+    );
+
     return (
         <div className="mb-3 mt-3 p-3 booking-calendar_selection-summary">
             {selectedEvent && (
-                <div className="mb-2 d-flex justify-content-between align-items-center">
+                <div className="mb-2 d-flex justify-content-between align-items-start">
                     <div>
                         <strong>You have selected the following venue:</strong>{' '}
                         {selectedEvent.venuedescription}
                     </div>
-                    <div className="text-right">
+                    <div className="booking-calendar_summary-buttons-wrapper">
                         <button
-                            className="btn btn-sm btn-outline-secondary mt-0 mb-1 mb-md-0 mr-0 mr-md-1"
+                            className="btn btn-sm btn-outline-secondary mt-0 mb-1 mb-md-0 mr-0"
                             onClick={onBackToEvents}
-                            style={{ width: '64px' }}
+                            style={{ width: '75px' }}
                         >
                             ← Back
                         </button>
                         <button
                             className="btn btn-sm btn-outline-danger mt-0"
-                            onClick={onClear}
-                            style={{ width: '64px', whiteSpace: 'nowrap' }}
+                            onClick={onRefresh}
+                            style={{ width: '75px', whiteSpace: 'nowrap' }}
                         >
-                            ↺ Clear
+                            ↺ Refresh
                         </button>
                     </div>
                 </div>
@@ -69,6 +78,7 @@ const Summary: FC<SummaryProps> = ({ eventCars, selectionRequired, selectedEvent
                 const availableCars = eventCars.filter((car) =>
                     car.componentPosition?.includes(selection.position),
                 );
+
                 const selectedCars = selectedCarsForSelection(selection.index);
 
                 return (
@@ -76,8 +86,9 @@ const Summary: FC<SummaryProps> = ({ eventCars, selectionRequired, selectedEvent
                         <strong>
                             {selection.name}{' '}
                             <small className="text-muted ml-2">
-                                ({availableCars.length} car{availableCars.length > 1 ? 's' : ''}{' '}
-                                available)
+                                (select {selectionRequiredAmount[selection.name]} of{' '}
+                                {availableCars.length} car
+                                {availableCars.length > 1 ? 's' : ''} available)
                             </small>
                         </strong>
 
@@ -85,14 +96,14 @@ const Summary: FC<SummaryProps> = ({ eventCars, selectionRequired, selectedEvent
                             {selectedCars.length > 0 &&
                                 selectedCars.map((car) => (
                                     <li
-                                        key={car?.componentId}
+                                        key={car.componentId}
                                         className="d-flex justify-content-between align-items-center mb-1"
                                     >
-                                        <span>{car?.websiteTitle}</span>
+                                        <span>{car.websiteTitle}</span>
                                         <button
-                                            data-carid={car?.componentId}
+                                            data-carid={car.componentId}
                                             data-selectionposition={JSON.stringify(
-                                                car?.componentPosition.map((item) => item - 1),
+                                                car.componentPosition.map((item) => item - 1),
                                             )}
                                             className="btn btn-sm btn-outline-danger"
                                             onClick={onRemoveCar}

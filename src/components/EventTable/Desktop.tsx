@@ -5,9 +5,9 @@ const Desktop: FC<TableProps> = ({ events, actions }) => {
     const { onViewEvent, onSelectEvent } = actions;
 
     return (
-        <div className="table-responsive d-none d-md-block">
-            <table className="table table-sm table-striped table-bordered text-center">
-                <thead className="thead-dark">
+        <div className="booking-calendar_table-responsive d-none d-md-block">
+            <table className="table table-sm table-striped booking-calendar_table-bordered text-center booking-calendar_table">
+                <thead>
                     <tr>
                         <th>Date</th>
                         <th>Event Details</th>

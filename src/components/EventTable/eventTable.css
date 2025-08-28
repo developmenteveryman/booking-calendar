@@ -1,28 +1,47 @@
-.table .thead-dark th {
-    color: #fff;
-    background-color: #212529;
-    border-color: #32383e;
+.booking-calendar_table {
+    width: 100%;
+    table-layout: fixed;
 }
 
-.table-responsive {
+.booking-calendar_table tbody {
+    display: block;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.booking-calendar_table thead,
+.booking-calendar_table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    overflow: hidden;
+}
+
+.booking-calendar_table thead th {
+    color: #ffffff !important;
+    background-color: var(--red) !important;
+    border-color: #dee2e6 !important;
+}
+
+.booking-calendar_table-responsive {
     display: block;
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-.table-bordered th,
-.table-bordered td {
+.booking-calendar_table-bordered th,
+.booking-calendar_table-bordered td {
     border: 1px solid #dee2e6;
 }
 
-.table td:last-child {
+.booking-calendar_table td:last-child {
     white-space: nowrap;
 }
 
-.table td:last-child .btn {
+.booking-calendar_table td:last-child .btn {
     display: inline-block;
-    min-width: 60px;
+    min-width: 50px;
 }
 
 /* Buttons */
@@ -31,7 +50,7 @@
     border-color: #6c757d !important;
     color: #fff !important;
     border-radius: 0 !important;
-    padding: 8px 16px !important;
+    padding: 4px 0 !important;
     font-size: 14px !important;
 }
 
@@ -51,7 +70,7 @@
     border-color: #3baa35 !important;
     color: #fff !important;
     border-radius: 0 !important;
-    padding: 8px 16px !important;
+    padding: 4px 0 !important;
     font-size: 14px !important;
 }
 
@@ -67,9 +86,13 @@
 }
 
 /* ========== MOBILE VIEW ========== */
+.booking-calendar_cards-wrapper{
+    max-height: 500px;
+    overflow-y: auto;
+}
 
 .mobile-event-title {
-    background-color: #212529 !important;
+    background-color: var(--red) !important;
     color: #fff !important;
     font-weight: bold !important;
     font-size: 1rem !important;

@@ -1,3 +1,27 @@
+.booking-calendar_times-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.booking-calendar_times-table tbody {
+    display: block;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.booking-calendar_times-table thead,
+.booking-calendar_times-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.booking-calendar_times-table thead th {
+    color: #ffffff !important;
+    background-color: var(--red) !important;
+    border-color: #dee2e6 !important;
+}
+
 .booking-calendar_selection-summary {
     background-color: #f8f9fa;
     border-radius: 4px;
@@ -6,36 +30,71 @@
 .booking-calendar_car-cell {
     width: 220px;
 }
+
+.booking-calendar_slot-cell {
+    width: 687px;
+}
+
 .booking-calendar_car-wrapper {
-    height: 120px;
+    height: 150px;
 }
-.booking-calendar_car-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-}
+
 .booking-calendar_car-price {
     position: absolute;
     top: 0;
-    left: 0;
-    background: #ff0000;
+    right: 0;
+    width: auto;
     color: #fff;
     font-size: 0.8rem;
     font-weight: bold;
-    padding: 2px 6px;
+    z-index: 1;
+    padding: 4px 10px 4px 18px;
 }
+
+.booking-calendar_car-price::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    padding: 0;
+    bottom: 0;
+    background: var(--red);
+    border-radius: unset;
+    z-index: -1;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%);
+}
+
 .booking-calendar_car-name {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
+    width: auto;
     text-align: center;
     font-weight: bold;
     font-size: 0.9rem;
-    padding: 4px;
+    padding: 4px 18px 4px 10px;
+    z-index: 1;
+    color: #fff;
+}
+
+.booking-calendar_car-name::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    bottom: 0;
+    background: var(--red);
+    border-radius: unset;
+    transform: skew(-20deg);
+    transform-origin: top right;
+    z-index: -1;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .booking-calendar_slot-btn {
@@ -86,10 +145,18 @@
     border: 1px solid #e96f0f;
 }
 
+.booking-calendar_summary-buttons-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem;
+}
+
 @media (min-width: 768px) {
     .booking-calendar_slots-container {
         display: grid !important;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fill, minmax(109px, 1fr)) !important;
         max-height: 300px !important;
         overflow-y: auto !important;
     }
@@ -106,12 +173,26 @@
     .booking-calendar_slots-container::-webkit-scrollbar-track {
         background-color: rgba(0, 0, 0, 0.05);
     }
+
+    .booking-calendar_summary-buttons-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .booking-calendar_summary-buttons-wrapper button {
+        margin-bottom: 0 !important; /* prevent wrapping from bottom margins */
+    }
 }
 
 /* Mobile cards */
 .booking-calendar_mobile-cards-wrapper {
     margin-bottom: 1rem;
     position: relative;
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 .booking-calendar_car-card {
@@ -138,7 +219,6 @@
 
 .booking-calendar_car-card img {
     width: 100%;
-    height: 200px;
     object-fit: cover;
     display: block;
 }
@@ -153,14 +233,34 @@
     z-index: 1;
 }
 
-.booking-calendar_car-card-title {
+.booking-calendar_car-card-name {
     position: absolute;
     bottom: 8px;
-    left: 12px;
-    color: white;
+    left: 0;
+    width: auto;
+    text-align: center;
     font-weight: bold;
     font-size: 1rem;
-    z-index: 2;
+    padding: 4px 18px 4px 10px;
+    z-index: 1;
+    color: var(--white);
+}
+
+.booking-calendar_car-card-name::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    bottom: 0;
+    background: var(--red);
+    border-radius: unset;
+    transform: skew(-20deg);
+    transform-origin: top right;
+    z-index: -1;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .booking-calendar_upgrade-badge {
@@ -214,4 +314,56 @@
     .booking-calendar_slots-grid-mobile .booking-calendar_slot-btn {
         flex: 1 1 calc(33.333% - 0.25rem);
     }
+}
+
+/* TOOLTIP STYLING */
+.booking-calendar_tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.booking-calendar_tooltip {
+    position: absolute;
+    bottom: 75%;
+    left: 50%;
+    transform: translate(-50%);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 10;
+}
+
+.booking-calendar_tooltip-wrapper:hover .booking-calendar_tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.booking-calendar_tooltip-inner {
+    background-color: #333333;
+    color: #ffffff;
+    text-align: center;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.booking-calendar_tooltip .booking-calendar_tooltip-arrow {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    width: 10px;
+    height: 5px;
+    overflow: hidden;
+}
+
+.booking-calendar_tooltip .booking-calendar_tooltip-arrow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background-color: #333333;
+    transform: rotate(45deg);
 }

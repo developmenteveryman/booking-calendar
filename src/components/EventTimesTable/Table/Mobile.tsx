@@ -30,7 +30,7 @@ const Mobile: FC<TableProps> = ({
     selectedSlotTimes,
     handleSlotClick,
     handleCarView,
-    selectionRequired
+    selectionRequired,
 }) => {
     const cars = eventCars.map((car) => ({
         ...car,
@@ -58,25 +58,14 @@ const Mobile: FC<TableProps> = ({
                                     alt={car.websiteTitle}
                                 />
                             )}
-                            <div className="booking-calendar_car-card-overlay" />
                             {car.supplement && (
                                 <span className="badge badge-danger booking-calendar_upgrade-badge">
                                     {car.supplement}
                                 </span>
                             )}
-                            <div className="booking-calendar_car-card-title">
+                            <div className="booking-calendar_car-card-name">
                                 {car.websiteTitle}
-                                <button
-                                    type="button"
-                                    className="btn btn-link p-0 ml-1 mt-0 text-white text-decoration-none"
-                                    title="View more"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    style={{ lineHeight: 0, fontSize: '0.9rem' }}
-                                    onClick={handleCarView}
-                                >
-                                    ⓘ
-                                </button>
+                                {' ⓘ'}
                             </div>
                         </div>
                         <div className="card-body booking-calendar_car-card-body p-2">
@@ -85,7 +74,7 @@ const Mobile: FC<TableProps> = ({
                                     const { disabled, title } = isSlotDisabled(
                                         Number(car.componentId),
                                         Number(slot.componentTimeId),
-                                        slot.componentTime,
+                                        slot.componentTimeStatus,
                                     );
                                     return (
                                         <button

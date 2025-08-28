@@ -11,6 +11,7 @@ import debounce from '../../utils/debounce';
 import { objectToSortedArray, sortOrder } from '../../utils/sort';
 import { useEventTimesTableContext } from '../../providers/EventTimesTable/context';
 import { onlyDuplicates } from '../../utils/filter';
+import Tooltip from '../Tooltip';
 
 type Props = {
     date?: number;
@@ -39,7 +40,7 @@ const getTargetIndex = (
 
 const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => {
     const { api } = useApi({ uuid });
-    const { cars, requiredPositions } = useEventComponents({
+    const { cars, requiredPositions, isLoading, loadCars } = useEventComponents({
         uuid,
         venueDateId: Number(selectedEvent.venuedateid),
     });
@@ -68,7 +69,7 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
         };
 
         const tooltip = () => {
-            if (requiredPositions.length > Object.keys(selectedSlotTimes).length) {
+            if (requiredPositions.length > selectedTimeIds.length) {
                 return 'Please fill all required positions.';
             }
             if (duplicateSlotTimes.length > 0) {
@@ -81,7 +82,7 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
             disabled: isDisabled(),
             tooltip: tooltip(),
         };
-    }, [duplicateSlotTimes, requiredPositions]);
+    }, [duplicateSlotTimes, requiredPositions, appliedSelection]);
 
     const handleSlotClick = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
         (e) => {
@@ -137,11 +138,15 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
         [selectedEvent, requiredPositions, setAppliedSelection],
     );
 
-    const handleClear = useCallback<React.MouseEventHandler<HTMLButtonElement>>((e) => {
-        e.preventDefault();
-        setSelectedSlotTimes({});
-        clearAppliedSelection();
-    }, []);
+    const handleRefresh = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
+        (e) => {
+            e.preventDefault();
+            setSelectedSlotTimes({});
+            clearAppliedSelection();
+            loadCars();
+        },
+        [loadCars, clearAppliedSelection],
+    );
 
     const handleRemoveCar = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
         (e) => {
@@ -210,7 +215,14 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
                 selectedEvent.date,
                 timeStart,
                 moment().utcOffset() * 60,
-                () => setConfirming(false),
+                (data) => {
+                    setConfirming(false);
+                    if (!data) {
+                        setSelectedSlotTimes({});
+                        clearAppliedSelection();
+                        loadCars();
+                    }
+                },
             );
         },
         [api, appliedSelection, cars],
@@ -241,7 +253,7 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
                     selectedEvent={selectedEvent}
                     actions={{
                         onBackToEvents,
-                        onClear: handleClear,
+                        onRefresh: handleRefresh,
                         onRemoveCar: handleRemoveCar,
                     }}
                 />
@@ -259,24 +271,29 @@ const EventTimesTable: FC<Props> = ({ uuid, selectedEvent, onBackToEvents }) => 
             <Legend />
 
             {/* Cars Table */}
-            <Table
-                uuid={uuid}
-                eventCars={cars}
-                selectedSlotTimes={selectedSlotTimes}
-                selectionRequired={requiredPositions}
-                handleSlotClick={handleSlotClick}
-                handleCarView={handleCarView}
-            />
+            {isLoading ? (
+                <div className="alert alert-info">Loading data, please wait...</div>
+            ) : (
+                <Table
+                    uuid={uuid}
+                    eventCars={cars}
+                    selectedSlotTimes={selectedSlotTimes}
+                    selectionRequired={requiredPositions}
+                    handleSlotClick={handleSlotClick}
+                    handleCarView={handleCarView}
+                />
+            )}
 
             {/* Confirm reservation */}
-            <button
-                className="btn btn-success confirm-button"
-                onClick={handleConfirm}
-                disabled={confirmButtonState.disabled}
-                title={confirmButtonState.tooltip}
-            >
-                Confirm
-            </button>
+            <Tooltip tooltip={confirmButtonState.tooltip}>
+                <button
+                    className="btn btn-success confirm-button"
+                    onClick={handleConfirm}
+                    disabled={confirmButtonState.disabled}
+                >
+                    Confirm
+                </button>
+            </Tooltip>
 
             {/* Overlay for confirmation */}
             <div

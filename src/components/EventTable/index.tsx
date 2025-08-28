@@ -1,4 +1,4 @@
-import { type FC, type MouseEventHandler, useCallback, useState } from 'react';
+import { type FC, type MouseEventHandler, useCallback, useEffect, useState } from 'react';
 import './eventTable.css';
 import EventTimesTable from '../EventTimesTable';
 import useEventRows from '../../hooks/useEventRows';
@@ -11,6 +11,7 @@ import { EventTimesTableProvider } from '../../providers/EventTimesTable';
 
 type EventTableProps = {
     commodityId: string;
+    reservationId?: string;
     uuid: string;
 };
 
@@ -22,10 +23,13 @@ export type TableProps = {
     };
 };
 
-const EventTable: FC<EventTableProps> = ({ uuid }) => {
+const EventTable: FC<EventTableProps> = ({ commodityId, uuid, ...rest }) => {
     const { api } = useApi({ uuid });
-    const { events } = useEventRows({ uuid });
+    const { events, isLoading } = useEventRows({ uuid });
     const [selectedEvent, setSelectedEvent] = useState<Nullable<EventRow>>(null);
+    const [reservationId, setReservationId] = useState<Nullable<string>>(
+        rest.reservationId && rest.reservationId !== '' ? rest.reservationId : null,
+    );
 
     const handleView = useCallback<React.MouseEventHandler<HTMLButtonElement>>((e) => {
         e.preventDefault();
@@ -47,6 +51,44 @@ const EventTable: FC<EventTableProps> = ({ uuid }) => {
         setSelectedEvent(null);
     }, []);
 
+    const handleCancelReservation = useCallback<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        if (reservationId && api) {
+            api.amendReservation(Number(commodityId), Number(reservationId));
+        }
+    }, [api, commodityId, reservationId]);
+
+    /**
+     *  Effect used to:
+     *      - Expose the API for the event table.
+     */
+    useEffect(() => {
+        const existingExposedApi = globalThis.bookingCalendar?.[uuid];
+        if (!existingExposedApi) {
+            globalThis.bookingCalendar = { [uuid]: { eventsTable: { setSelectedEvent } } };
+            return;
+        }
+        globalThis.bookingCalendar[uuid].eventsTable = {
+            setSelectedEvent,
+        };
+
+        return () => {
+            delete globalThis.bookingCalendar[uuid];
+        };
+    }, []);
+
+    if (reservationId) {
+        return (
+            <>
+                <div className="alert alert-info">
+                    Must cancel existing reservation before amend:
+                    <button className="btn btn-link mt-0" onClick={handleCancelReservation}>
+                        Cancel Reservation
+                    </button>
+                </div>
+            </>
+        );
+    }
+
     if (selectedEvent) {
         return (
             <EventTimesTableProvider uuid={uuid}>
@@ -58,25 +100,32 @@ const EventTable: FC<EventTableProps> = ({ uuid }) => {
             </EventTimesTableProvider>
         );
     }
+
     return (
         <>
-            {/* Desktop Table */}
-            <Desktop
-                events={events}
-                actions={{
-                    onViewEvent: handleView,
-                    onSelectEvent: handleSelect,
-                }}
-            />
+            {isLoading ? (
+                <div className="alert alert-info">Loading data, please wait...</div>
+            ) : (
+                <>
+                    {/* Desktop Table */}
+                    <Desktop
+                        events={events}
+                        actions={{
+                            onViewEvent: handleView,
+                            onSelectEvent: handleSelect,
+                        }}
+                    />
 
-            {/* Mobile Cards */}
-            <Mobile
-                events={events}
-                actions={{
-                    onViewEvent: handleView,
-                    onSelectEvent: handleSelect,
-                }}
-            />
+                    {/* Mobile Cards */}
+                    <Mobile
+                        events={events}
+                        actions={{
+                            onViewEvent: handleView,
+                            onSelectEvent: handleSelect,
+                        }}
+                    />
+                </>
+            )}
         </>
     );
 };

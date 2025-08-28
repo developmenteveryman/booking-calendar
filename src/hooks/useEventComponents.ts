@@ -16,7 +16,7 @@ type HookReturn = {
 };
 
 export default function useEventComponents({ uuid, venueDateId }: HookArguments): HookReturn {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [cars, setCars] = useState<SelectableCar[]>([]);
     const [requiredPositions, setRequiredPositions] = useState<SelectionRequired[]>([]);

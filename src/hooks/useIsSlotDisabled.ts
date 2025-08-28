@@ -1,5 +1,5 @@
 import { useEventTimesTableContext } from '../providers/EventTimesTable/context';
-import type { SelectableCar, SelectionRequired } from '../types/component';
+import type { ComponentTime, SelectableCar, SelectionRequired } from '../types/component';
 import type { AppliedSelection } from '../types/reservation';
 import { sortOrder } from '../utils/sort';
 
@@ -13,8 +13,12 @@ export const useIsSlotDisabled = (
         state: { appliedSelection },
     } = useEventTimesTableContext();
 
-    const isSlotDisabled = (carId: number, timeId: number, slotStatus: string): DisableInfo => {
-        if (slotStatus === 'fullyBooked') {
+    const isSlotDisabled = (
+        carId: SelectableCar['componentId'],
+        timeId: ComponentTime['componentTimeId'],
+        slotStatus: ComponentTime['componentTimeStatus'],
+    ): DisableInfo => {
+        if (slotStatus === 'full') {
             return { disabled: true, title: 'Fully booked' };
         }
 

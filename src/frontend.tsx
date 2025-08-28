@@ -20,6 +20,7 @@ export type BookingCalendarProps = {
     display: BlockAttribute<string>;
     id: BlockAttribute<string>;
     uuid: BlockAttribute<string>;
+    reservationId?: BlockAttribute<string>;
 };
 
 export function BookingCalendar(props: BookingCalendarProps) {
@@ -31,7 +32,11 @@ export function BookingCalendar(props: BookingCalendarProps) {
             className={classes}
             style={{ display: props.display?.toString() || 'block' }}
         >
-            <EventTable commodityId={props.commodityId.toString()} uuid={props.uuid.toString()} />
+            <EventTable
+                commodityId={props.commodityId.toString()}
+                reservationId={props.reservationId?.toString()}
+                uuid={props.uuid.toString()}
+            />
         </div>
     );
 }

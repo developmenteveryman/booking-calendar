@@ -1,6 +1,20 @@
-import type { MatrixAvailability } from '@/types/matrix';
+import type React from 'react';
+import type { MatrixAvailability } from './types/matrix';
+import type { EventRow } from './types/event';
+import type { Nullable } from './types/common';
 
 declare global {
+    // Exposed by BookingCalendar components
+    var bookingCalendar: Record<
+        string,
+        {
+            eventsTable: {
+                setSelectedEvent: React.Dispatch<React.SetStateAction<Nullable<EventRow>>>;
+            };
+        }
+    >;
+
+    // Expected by BookingCalendar components
     var moment: typeof import('moment');
     var matrixAvailabilityInstances: Record<string, MatrixAvailability> | undefined;
     var clearVenue: (

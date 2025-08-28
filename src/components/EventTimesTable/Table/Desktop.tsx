@@ -42,7 +42,7 @@ const Desktop: FC<TableProps> = ({
     const { isSlotDisabled } = useIsSlotDisabled(cars, selectionRequired);
     return (
         <div className="table-responsive d-none d-md-block">
-            <table className="table table-bordered align-middle text-center mb-0">
+            <table className="table table-bordered align-middle text-center mb-0 booking-calendar_times-table">
                 <thead className="thead-dark">
                     <tr>
                         <th style={{ width: '220px' }}>Car</th>
@@ -57,7 +57,7 @@ const Desktop: FC<TableProps> = ({
                                 data-componentid={car.componentId}
                                 onClick={handleCarView}
                             >
-                                <div className="position-relative text-white booking-calendar_car-wrapper">
+                                <div className="position-relative text-dark booking-calendar_car-wrapper">
                                     {car.image && (
                                         <img
                                             src={`${car.image}`}
@@ -69,25 +69,14 @@ const Desktop: FC<TableProps> = ({
                                             }}
                                         />
                                     )}
-                                    <div className="booking-calendar_car-overlay" />
                                     {car.supplement && (
                                         <div className="booking-calendar_car-price">
                                             {car.supplement}
                                         </div>
                                     )}
                                     <div className="booking-calendar_car-name">
-                                        {car.websiteTitle}{' '}
-                                        <button
-                                            type="button"
-                                            className="btn btn-link p-0 m-0 text-white text-decoration-none"
-                                            title="View more"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            style={{ lineHeight: 0, fontSize: '0.9rem' }}
-                                            onClick={handleCarView}
-                                        >
-                                            ⓘ
-                                        </button>
+                                        {car.websiteTitle}
+                                        {' ⓘ'}
                                     </div>
                                 </div>
                             </td>
@@ -97,7 +86,7 @@ const Desktop: FC<TableProps> = ({
                                         const { disabled, title } = isSlotDisabled(
                                             Number(car.componentId),
                                             Number(slot.componentTimeId),
-                                            slot.componentTime,
+                                            slot.componentTimeStatus,
                                         );
                                         return (
                                             <button

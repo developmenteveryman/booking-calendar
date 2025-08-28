@@ -26,3 +26,9 @@ export type GetEventComponentsResponse = {
     components: SelectableCar[];
     selectionsRequired: SelectionRequired[];
 };
+
+export type ExpireReservationResponse = {
+    status: 'success' | 'error';
+    message: string;
+    ids: number[];
+};

@@ -17,13 +17,14 @@ export type MatrixAvailability = {
     dateAvailability: (date: any) => string | false;
     changedDate: (e: { date: Date }, date?: number) => void;
     changedPeriod: (e: { date: Date }) => boolean;
+    amendReservation: (commodityId: number, reservationId: number) => void;
     confirmReservation: (
         carIds: SelectableCar['componentId'][],
         timeIds: ComponentTime['componentTimeId'][],
         dateStamp: number,
         timestamp: number,
         timezoneOffset?: number,
-        onFinish?: () => void,
+        onFinish?: (data: any) => void,
     ) => Promise<boolean>;
     getEventsList: () => Promise<Record<number | string, Event>>;
     getEventComponents: (venueDateId: number) => Promise<GetEventComponentsResponse>;
